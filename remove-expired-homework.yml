@@ -1,0 +1,17 @@
+name: Remove expired homework
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # runs every 5 minutes
+  workflow_dispatch: {}    # also lets you click "Run workflow" manually on GitHub
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete assignments past their due date
+        run: |
+          curl -sS -X DELETE \
+            "https://fklmuyjwtrwobfopnxcb.supabase.co/rest/v1/assignments?due=lt.$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbG11eWp3dHJ3b2Jmb3BueGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2NjQ4MDgsImV4cCI6MjEwNDI0MDgwOH0.FAHjbOXZUHjAcD8PMl21dWc5h16IFs0wvEXca7vahGw" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbG11eWp3dHJ3b2Jmb3BueGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2NjQ4MDgsImV4cCI6MjEwNDI0MDgwOH0.FAHjbOXZUHjAcD8PMl21dWc5h16IFs0wvEXca7vahGw"

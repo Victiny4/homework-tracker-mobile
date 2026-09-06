@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>homework tracker</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2a78d6">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+<div id="app">
+
+    <header>
+        <h1>homework tracker</h1>
+        <div class="tabgroup" id="viewTabs">
+            <button data-view="upcoming" class="active">Upcoming</button>
+            <button data-view="completed">Completed</button>
+            <button data-view="all">All tasks</button>
+        </div>
+    </header>
+
+    <div class="card">
+        <h2>Daily Homework Workload</h2>
+        <div id="chartWrap">
+            <svg id="chartSvg" viewBox="0 0 860 300" preserveAspectRatio="xMidYMid meet"></svg>
+            <div id="tooltip"></div>
+        </div>
+        <div id="legend"></div>
+    </div>
+
+    <div id="stats">
+        <div class="stat-tile"><div class="label">Completion</div><div class="value" id="statCompletion">0%</div></div>
+        <div class="stat-tile"><div class="label">To Do Stream</div><div class="value" id="statTodo">0 left</div></div>
+        <div class="stat-tile"><div class="label">Effort Left</div><div class="value" id="statEffort">0h</div></div>
+    </div>
+
+    <div class="card">
+        <h2>Add an assignment</h2>
+        <form id="addForm" class="add-form">
+            <input type="text" id="addName" placeholder="Your name" hidden>
+            <input type="text" id="addTitle" placeholder="Assignment title" required>
+            <input type="text" id="addSubject" placeholder="Subject" list="subjectOptions" required>
+            <datalist id="subjectOptions"></datalist>
+            <input type="date" id="addDue" required>
+            <input type="number" id="addHours" placeholder="Hours" min="0" step="0.5">
+            <button type="submit">+ Add</button>
+        </form>
+    </div>
+
+    <div id="list">
+        <div class="card">
+            <div id="listRows"></div>
+            <div id="listEmpty" hidden>Nothing here.</div>
+        </div>
+    </div>
+
+    <div id="classFilter">
+        <div class="label">Class Filter</div>
+        <div class="pillrow" id="subjectPills"></div>
+    </div>
+
+</div>
+
+<div id="credit">made by kyan</div>
+
+<script src="config.js"></script>
+<script src="data-mock.js"></script>
+<script src="data-remote.js"></script>
+<script src="app.js"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+    }
+</script>
+</body>
+</html>
