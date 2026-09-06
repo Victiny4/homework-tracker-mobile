@@ -50,6 +50,11 @@ header h1 {
 }
 .card h2 { font-size:12px; font-weight:600; color:var(--text-secondary); letter-spacing:0.2px; margin-bottom:6px; }
 
+.error-banner {
+    background:#fdecea; border:1px solid #f3b7ae; color:#8a2c1f;
+    border-radius:10px; padding:10px 14px; margin-bottom:16px; font-size:13px;
+}
+
 /* ── chart ──────────────────────────────────────────────────── */
 #chartWrap { position:relative; }
 #chartSvg { width:100%; height:auto; display:block; overflow:visible; }

@@ -386,11 +386,19 @@ document.querySelectorAll('#viewTabs button').forEach(btn => {
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
 
+function showRemoteError(message) {
+    const el = document.getElementById('remoteError');
+    el.textContent = message;
+    el.hidden = !message;
+}
+
 async function refreshRemote() {
     try {
         sources.remote = await fetchRemoteAssignments();
+        showRemoteError(null);
     } catch (err) {
         console.error('Could not load shared assignments:', err.message);
+        showRemoteError(`Couldn't load the shared list: ${err.message}`);
     }
     renderAll();
 }
@@ -403,6 +411,8 @@ if (REMOTE_ON) {
     addNameInput.hidden = false;
     try { addNameInput.value = localStorage.getItem('classroom-dashboard:username') || ''; } catch { /* ignore */ }
 }
+
+const addSubmitBtn = addForm.querySelector('button[type="submit"]');
 
 addForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -418,6 +428,8 @@ addForm.addEventListener('submit', async (e) => {
 
     if (REMOTE_ON) {
         try { localStorage.setItem('classroom-dashboard:username', name); } catch { /* ignore */ }
+        addSubmitBtn.disabled = true;
+        addSubmitBtn.textContent = 'Adding…';
         try {
             await insertRemoteAssignment({ title, subject, due, estHours, completed: false, addedBy: name || null });
             await refreshRemote();
@@ -425,6 +437,9 @@ addForm.addEventListener('submit', async (e) => {
             console.error(err);
             alert(`Could not add to the shared list: ${err.message}`);
             return;
+        } finally {
+            addSubmitBtn.disabled = false;
+            addSubmitBtn.textContent = '+ Add';
         }
     } else {
         sources.manual.push({
