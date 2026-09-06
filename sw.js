@@ -1,4 +1,4 @@
-const CACHE_NAME = 'homework-tracker-v1';
+const CACHE_NAME = 'homework-tracker-v2';
 const APP_SHELL = [
     './',
     './index.html',
@@ -28,7 +28,8 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// App shell files: cache-first, so the app opens instantly and works offline.
+// App shell files: network-first, so an online visit always gets the latest
+// deployed code; only falls back to the last cached copy when offline.
 // Everything else (e.g. Supabase requests) just goes to the network as normal.
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
@@ -36,14 +37,12 @@ self.addEventListener('fetch', (event) => {
     if (url.origin !== self.location.origin) return;
 
     event.respondWith(
-        caches.match(event.request).then((cached) => {
-            const network = fetch(event.request)
-                .then((response) => {
-                    caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
-                    return response;
-                })
-                .catch(() => cached);
-            return cached || network;
-        })
+        fetch(event.request)
+            .then((response) => {
+                const copy = response.clone();
+                event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)));
+                return response;
+            })
+            .catch(() => caches.match(event.request))
     );
 });
