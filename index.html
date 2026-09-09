@@ -23,6 +23,13 @@
         </div>
     </header>
 
+    <div class="tabgroup" id="gradeTabs">
+        <button data-grade="Freshman" class="active">Freshman</button>
+        <button data-grade="Sophomore">Sophomore</button>
+        <button data-grade="Junior">Junior</button>
+        <button data-grade="Senior">Senior</button>
+    </div>
+
     <div id="remoteError" class="error-banner" hidden></div>
 
     <div class="card">
@@ -47,6 +54,13 @@
             <input type="text" id="addTitle" placeholder="Assignment title" required>
             <input type="text" id="addSubject" placeholder="Subject" list="subjectOptions" required>
             <datalist id="subjectOptions"></datalist>
+            <select id="addGrade" required>
+                <option value="" disabled selected>Grade</option>
+                <option value="Freshman">Freshman</option>
+                <option value="Sophomore">Sophomore</option>
+                <option value="Junior">Junior</option>
+                <option value="Senior">Senior</option>
+            </select>
             <input type="date" id="addDue" required>
             <input type="number" id="addHours" placeholder="Hours" min="0" step="0.5">
             <button type="submit">+ Add</button>

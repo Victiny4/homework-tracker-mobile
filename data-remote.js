@@ -43,6 +43,7 @@ function rowToAssignment(row) {
         remoteId: row.id,
         title: row.title,
         subject: row.subject,
+        grade: row.grade,
         due: new Date(row.due),
         estHours: row.est_hours,
         completed: row.completed,
@@ -70,6 +71,7 @@ async function insertRemoteAssignment(a) {
         c.from('assignments').insert({
             title: a.title,
             subject: a.subject,
+            grade: a.grade,
             due: a.due.toISOString(),
             est_hours: a.estHours,
             completed: !!a.completed,

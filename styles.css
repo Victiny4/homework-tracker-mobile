@@ -35,13 +35,14 @@ header {
 header h1 {
     font-size:19px; font-weight:600; display:flex; align-items:center; gap:8px;
 }
-.tabgroup { display:flex; gap:4px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:3px; }
+.tabgroup { display:flex; flex-wrap:wrap; gap:4px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:3px; }
 .tabgroup button {
     border:none; background:none; font:inherit; font-size:12px; font-weight:600;
     color:var(--text-secondary); padding:7px 16px; border-radius:16px; cursor:pointer;
 }
 .tabgroup button.active { background:var(--accent); color:#fff; }
 .tabgroup button:not(.active):hover { color:var(--text-primary); }
+#gradeTabs { margin-bottom:16px; width:fit-content; }
 
 /* ── cards ──────────────────────────────────────────────────── */
 .card {
@@ -86,13 +87,14 @@ header h1 {
 
 /* ── add-assignment form ────────────────────────────────────── */
 .add-form { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-.add-form input {
+.add-form input, .add-form select {
     font:inherit; font-size:12.5px; color:var(--text-primary);
     border:1px solid var(--border); background:var(--page); border-radius:6px;
     padding:8px 10px;
 }
 .add-form input#addTitle { flex:2; min-width:160px; }
 .add-form input#addSubject { flex:1; min-width:110px; }
+.add-form select#addGrade { flex:0 0 auto; }
 .add-form input#addDue { flex:0 0 auto; }
 .add-form input#addHours { width:80px; }
 .add-form button {

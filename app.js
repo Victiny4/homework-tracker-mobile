@@ -7,7 +7,8 @@ const REMOTE_ON = isRemoteConfigured();
 
 const sources = { mock: USE_MOCK_DATA ? loadMockAssignments() : [], manual: loadManualAssignments(), remote: [] };
 const subjectColor = new Map(); // subject name -> hex, assigned in first-seen order
-let state = { view: 'upcoming', subject: 'All' };
+const GRADES = ['Freshman', 'Sophomore', 'Junior', 'Senior'];
+let state = { view: 'upcoming', subject: 'All', grade: GRADES[0] };
 
 const completedOverrides = loadCompletedOverrides();
 
@@ -28,7 +29,7 @@ function loadManualAssignments() {
 }
 function saveManualAssignments() {
     const raw = sources.manual.map(a => ({
-        id: a.id, title: a.title, subject: a.subject, due: a.due.toISOString(),
+        id: a.id, title: a.title, subject: a.subject, grade: a.grade, due: a.due.toISOString(),
         estHours: a.estHours, completed: a.completed,
     }));
     try { localStorage.setItem('classroom-dashboard:manual', JSON.stringify(raw)); }
@@ -68,6 +69,7 @@ function dueLabel(due) {
 /* ── filtering ─────────────────────────────────────────────── */
 function filteredAssignments() {
     return allAssignments().filter(a => {
+        if (a.grade !== state.grade) return false;
         if (state.subject !== 'All' && a.subject !== state.subject) return false;
         if (state.view === 'upcoming') return !a.completed;
         if (state.view === 'completed') return a.completed;
@@ -185,7 +187,7 @@ function renderList(list) {
 
 /* ── subject filter pills ─────────────────────────────────── */
 function renderSubjectPills() {
-    const subjects = [...new Set(allAssignments().map(a => a.subject))];
+    const subjects = [...new Set(allAssignments().filter(a => a.grade === state.grade).map(a => a.subject))];
     const wrap = document.getElementById('subjectPills');
     wrap.innerHTML = '';
 
@@ -373,6 +375,7 @@ function renderAll() {
 
     const list = filteredAssignments();
     document.querySelectorAll('#viewTabs button').forEach(b => b.classList.toggle('active', b.dataset.view === state.view));
+    document.querySelectorAll('#gradeTabs button').forEach(b => b.classList.toggle('active', b.dataset.grade === state.grade));
     renderStats(list);
     renderChart(list);
     renderList(list);
@@ -382,6 +385,9 @@ function renderAll() {
 /* ── wiring ────────────────────────────────────────────────── */
 document.querySelectorAll('#viewTabs button').forEach(btn => {
     btn.addEventListener('click', () => { state.view = btn.dataset.view; renderAll(); });
+});
+document.querySelectorAll('#gradeTabs button').forEach(btn => {
+    btn.addEventListener('click', () => { state.grade = btn.dataset.grade; state.subject = 'All'; renderAll(); });
 });
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -419,9 +425,10 @@ addForm.addEventListener('submit', async (e) => {
     const name = addNameInput.value.trim();
     const title = document.getElementById('addTitle').value.trim();
     const subject = document.getElementById('addSubject').value.trim();
+    const grade = document.getElementById('addGrade').value;
     const dueStr = document.getElementById('addDue').value;
     const hoursStr = document.getElementById('addHours').value;
-    if (!title || !subject || !dueStr) return;
+    if (!title || !subject || !grade || !dueStr) return;
 
     const due = new Date(`${dueStr}T23:59:00`);
     const estHours = hoursStr ? parseFloat(hoursStr) : null;
@@ -431,7 +438,7 @@ addForm.addEventListener('submit', async (e) => {
         addSubmitBtn.disabled = true;
         addSubmitBtn.textContent = 'Adding…';
         try {
-            await insertRemoteAssignment({ title, subject, due, estHours, completed: false, addedBy: name || null });
+            await insertRemoteAssignment({ title, subject, grade, due, estHours, completed: false, addedBy: name || null });
             await refreshRemote();
         } catch (err) {
             console.error(err);
@@ -446,6 +453,7 @@ addForm.addEventListener('submit', async (e) => {
             id: `manual-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
             title,
             subject,
+            grade,
             due,
             estHours,
             completed: false,
